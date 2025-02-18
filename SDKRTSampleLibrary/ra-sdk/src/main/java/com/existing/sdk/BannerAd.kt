@@ -20,7 +20,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.privacysandbox.activity.client.createSdkActivityLauncher
 import androidx.privacysandbox.ui.client.view.SandboxedSdkView
 import androidx.privacysandbox.ui.core.SandboxedUiAdapter
@@ -32,11 +32,12 @@ class BannerAd(context: Context, attrs: AttributeSet? = null) : LinearLayout(con
     // existing ad logic. For this example, we send all requests to the sandboxed SDK as long as it
     // exists.
     suspend fun loadAd(
-        baseActivity: AppCompatActivity,
+        baseActivity: FragmentActivity,
         clientMessage: String,
         allowSdkActivityLaunch: () -> Boolean,
         shouldLoadWebView: Boolean,
-        mediationType: String) {
+        mediationType: String,
+    ) {
         val bannerAd = getBannerAdFromRuntimeEnabledSdkIfExists(
             baseActivity,
             clientMessage,
@@ -57,16 +58,15 @@ class BannerAd(context: Context, attrs: AttributeSet? = null) : LinearLayout(con
     }
 
     private suspend fun getBannerAdFromRuntimeEnabledSdkIfExists(
-        baseActivity: AppCompatActivity,
+        baseActivity: FragmentActivity,
         message: String,
         allowSdkActivityLaunch: () -> Boolean,
         shouldLoadWebView: Boolean,
-        mediationType: String
+        mediationType: String,
     ): SandboxedUiAdapter? {
         if (!ExistingSdk.isSdkLoaded()) {
             return null
         }
-
         val launcher = baseActivity.createSdkActivityLauncher(allowSdkActivityLaunch)
         val request = SdkBannerRequest(message, launcher, shouldLoadWebView)
         return ExistingSdk.loadSdkIfNeeded(context)?.getBanner(request)

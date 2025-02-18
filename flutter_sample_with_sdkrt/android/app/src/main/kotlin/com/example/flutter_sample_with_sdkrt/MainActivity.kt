@@ -5,7 +5,6 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -31,9 +30,10 @@ import kotlin.random.Random
 // Have to use the FlutterFragmentActivity instead of FlutterActivity
 // because we only want to show the view on the part of the screen.
 class MainActivity : FlutterFragmentActivity() {
-    val composeViewIdCounter = AtomicInteger(0)
+    val viewsId = AtomicInteger(0)
     val composeViews = mutableMapOf<Int, ComposeView>()
-    var bannerAdLinearLayoutId = 0
+    val linearLayouts = mutableMapOf<Int, LinearLayout>()
+
     private lateinit var bannerAd: BannerAd
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -52,8 +52,7 @@ class MainActivity : FlutterFragmentActivity() {
 
                 "loadBannerAd" -> {
                     var linearLayout = createLinearLayout(this)
-                    bannerAdLinearLayoutId = linearLayout.id
-                    setContentView(linearLayout)
+                    linearLayouts[linearLayout.id] = linearLayout
 
                     bannerAd = BannerAd(this)
 
@@ -67,13 +66,13 @@ class MainActivity : FlutterFragmentActivity() {
                     CoroutineScope(Dispatchers.Main).launch {
 
                         bannerAd.loadAd(
-                            this@MainActivity as AppCompatActivity,
+                            this@MainActivity,
                             PACKAGE_NAME,
                             shouldStartActivityPredicate(),
                             false,
                             "NONE"
                         )
-                        result.success(bannerAdLinearLayoutId)
+                        result.success(linearLayout.id)
                     }
                 }
 
@@ -103,7 +102,7 @@ class MainActivity : FlutterFragmentActivity() {
         // Set layout width and height
         linearLayout.layoutParams = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, // Or a specific width
-            400  // Or a specific height
+            ViewGroup.LayoutParams.WRAP_CONTENT  // Or a specific height
         )
 
         // Set top margin (100 pixels)
@@ -119,8 +118,9 @@ class MainActivity : FlutterFragmentActivity() {
 
 
         //  Optional: Add some styling (example)
-        linearLayout.setBackgroundColor(android.graphics.Color.LTGRAY)
+        linearLayout.setBackgroundColor(android.graphics.Color.GREEN)
         linearLayout.setPadding(16, 16, 16, 16) // Example padding
+        linearLayout.id = viewsId.incrementAndGet()
 
         return linearLayout
     }
@@ -128,7 +128,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     private fun getRandomNumber(): ComposeView {
         val randomNumber = Random.nextInt(0, 100)
-        val viewId = composeViewIdCounter.incrementAndGet()
+        val viewId = viewsId.incrementAndGet()
         return ComposeView(this).apply {
             id = viewId // Set the view
             setContent {
@@ -174,7 +174,8 @@ class LinearLayoutViewFactory(private val activity: MainActivity) :
     PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         val id = (args as Map<String, Any?>)["id"] as Int
-        val linearLayout = activity.findViewById<LinearLayout>(id)
+        val linearLayout = activity.linearLayouts[id]
+            ?: throw IllegalArgumentException("No LinearLayout found with id: $id")
         return LinearLayoutViewAndroid(linearLayout)
     }
 }
