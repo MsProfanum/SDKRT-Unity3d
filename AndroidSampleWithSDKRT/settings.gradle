@@ -1,0 +1,29 @@
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "AndroidSampleWithSDKRT"
+include ':app'
+include ':re-sdk'
+project(':re-sdk').projectDir = file('../SDKRTSampleLibrary/re-sdk')
+include ':re-sdk-bundle'
+project(':re-sdk-bundle').projectDir = file('../SDKRTSampleLibrary/re-sdk-bundle')
+include ':ra-sdk'
+project(':ra-sdk').projectDir = file('../SDKRTSampleLibrary/ra-sdk')
