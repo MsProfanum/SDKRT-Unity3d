@@ -6,6 +6,9 @@ plugins {
 }
 
 android {
+    privacySandbox {
+        enable = true
+    }
     buildFeatures {
         compose = true
     }
@@ -14,8 +17,7 @@ android {
     }
 
     namespace = "com.example.flutter_sample_with_sdkrt"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -32,7 +34,8 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24
-        targetSdk = 35
+        compileSdk = 35
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -53,7 +56,7 @@ val compose_version = rootProject.extra["compose_version"]
 
 dependencies {
     implementation(project(":ra-sdk"))
-    implementation(project(":re-sdk-bundle"))
+//    implementation(project(":re-sdk-bundle"))
     implementation("androidx.privacysandbox.sdkruntime:sdkruntime-client:$privacy_sandbox_sdk_runtime_version")
     // This is required to display banner ads using the SandboxedUiAdapter interface.
     implementation("androidx.privacysandbox.ui:ui-core:$privacy_sandbox_ui_version")
@@ -67,6 +70,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:$compose_version")
     implementation("androidx.compose.material:material:$compose_version")
     implementation("androidx.core:core-ktx:1.2.0")
+//    implementation(project(":re-sdk"))
 }
 
 flutter {

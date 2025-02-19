@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
@@ -30,6 +33,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableSurfaceControl"
+            android:value="true" />
+
+        <uses-sdk-library
+            android:name="com.example.sdk"
+            android:certDigest="46:59:B0:83:BB:7E:B7:F7:13:B7:46:9F:4E:91:D7:43:D8:E5:1A:F0:06:82:09:8F:35:F4:49:22:BB:7E:04:64"
+            android:versionMajor="10000" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

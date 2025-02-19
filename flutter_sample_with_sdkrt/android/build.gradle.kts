@@ -1,9 +1,9 @@
 buildscript {
     extra.apply {
-        set("privacy_sandbox_ui_version","1.0.0-alpha09")
-        set("privacy_sandbox_tools_version","1.0.0-alpha09")
+        set("privacy_sandbox_ui_version", "1.0.0-alpha12")
+        set("privacy_sandbox_tools_version", "1.0.0-alpha09")
         set("privacy_sandbox_sdk_runtime_version", "1.0.0-alpha14")
-        set("privacy_sandbox_activity_version","1.0.0-alpha01")
+        set("privacy_sandbox_activity_version", "1.0.0-alpha01")
         set("compose_version", "1.5.3")
     }
 }

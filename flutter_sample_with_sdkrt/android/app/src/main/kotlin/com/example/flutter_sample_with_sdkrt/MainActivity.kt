@@ -14,15 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import com.existing.sdk.BannerAd
+import com.existing.sdk.ExistingSdk
+import com.existing.sdk.FullscreenAd
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
@@ -33,6 +34,7 @@ class MainActivity : FlutterFragmentActivity() {
     val viewsId = AtomicInteger(0)
     val composeViews = mutableMapOf<Int, ComposeView>()
     val linearLayouts = mutableMapOf<Int, LinearLayout>()
+    private var runtimeAwareSdk = ExistingSdk(this)
 
     private lateinit var bannerAd: BannerAd
 
@@ -44,6 +46,32 @@ class MainActivity : FlutterFragmentActivity() {
             CHANNEL
         ).setMethodCallHandler { call, result ->
             when (call.method) {
+                "initializeSdk" -> {
+
+                    lifecycleScope.launch {
+                        if (!runtimeAwareSdk.initialize()) {
+                            result.success("Failed to initialize SDK")
+                        } else {
+                            result.success("Initialized SDK!")
+                        }
+
+                    }
+                }
+
+                "createFile" -> {
+
+                    lifecycleScope.launch {
+                        val success = runtimeAwareSdk.createFile(3)
+
+                        if (success == null) {
+                            result.success("Please load the SDK first!")
+                        } else {
+                            result.success(success)
+                        }
+
+                    }
+                }
+
                 "getRandomNumber" -> {
                     val composeView = getRandomNumber()
                     composeViews[composeView.id] = composeView
@@ -63,7 +91,7 @@ class MainActivity : FlutterFragmentActivity() {
 
                     linearLayout.addView(bannerAd)
 
-                    CoroutineScope(Dispatchers.Main).launch {
+                    lifecycleScope.launch {
 
                         bannerAd.loadAd(
                             this@MainActivity,
@@ -72,7 +100,15 @@ class MainActivity : FlutterFragmentActivity() {
                             false,
                             "NONE"
                         )
+
                         result.success(linearLayout.id)
+                    }
+                }
+
+                "showFullscreenAd" -> {
+                    lifecycleScope.launch {
+                        val fullscreenAd = FullscreenAd.create(this@MainActivity, "NONE")
+                        fullscreenAd.show(this@MainActivity, shouldStartActivityPredicate())
                     }
                 }
 
