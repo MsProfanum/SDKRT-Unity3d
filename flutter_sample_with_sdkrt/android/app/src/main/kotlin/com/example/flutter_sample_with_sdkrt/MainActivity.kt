@@ -1,7 +1,6 @@
 package com.example.flutter_sample_with_sdkrt
 
 import android.content.Context
-import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -79,19 +78,14 @@ class MainActivity : FlutterFragmentActivity() {
                 }
 
                 "loadBannerAd" -> {
-                    var linearLayout = createLinearLayout(this)
-                    linearLayouts[linearLayout.id] = linearLayout
 
-                    bannerAd = BannerAd(this)
-
-                    bannerAd.layoutParams = LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    )
-
-                    linearLayout.addView(bannerAd)
 
                     lifecycleScope.launch {
+                        bannerAd = BannerAd(this@MainActivity)
+
+                        var linearLayout = createLinearLayout(this@MainActivity)
+                        linearLayouts[linearLayout.id] = linearLayout
+                        linearLayout.addView(bannerAd)
 
                         bannerAd.loadAd(
                             this@MainActivity,
@@ -137,21 +131,9 @@ class MainActivity : FlutterFragmentActivity() {
 
         // Set layout width and height
         linearLayout.layoutParams = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, // Or a specific width
-            ViewGroup.LayoutParams.WRAP_CONTENT  // Or a specific height
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
         )
-
-        // Set top margin (100 pixels)
-        val topMarginPx = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, // Use DIPs for density independence
-            100f, // 100 dp
-            context.resources.displayMetrics
-        ).toInt()
-
-        val params = linearLayout.layoutParams as LinearLayout.LayoutParams
-        params.topMargin = topMarginPx
-        linearLayout.layoutParams = params
-
 
         //  Optional: Add some styling (example)
         linearLayout.setBackgroundColor(android.graphics.Color.GREEN)
